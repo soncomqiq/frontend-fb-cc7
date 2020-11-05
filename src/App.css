@@ -1,10 +1,18 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.Form {
+  border-radius: 10px;
+  box-shadow: 5px 10px 50px rgba(0, 0, 0, 0.5);
+  background-color: "#F8F8F8";
+  margin-top: 20px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
