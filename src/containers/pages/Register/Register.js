@@ -1,34 +1,58 @@
-import React from 'react';
-import { Row, Col, Button, Form, Input, Tooltip, Divider } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import React, { useState } from 'react';
+import { Row, Col, Button, Form, Input, Tooltip, Divider, message, notification } from "antd";
+import { InboxOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import axios from "../../../config/axios";
+import { BASE_BACKEND_URL } from '../../../config/constants';
+import Dragger from 'antd/lib/upload/Dragger';
+import { withRouter } from "react-router-dom";
 
 const layout = {
   labelCol: { xs: 24, sm: 5, md: 4, lg: 5, xl: 5, xxl: 5 },
   wrapperCol: { xs: 24, sm: 19, md: 20, lg: 19, xl: 19, xxl: 19 },
 };
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
-  },
-};
 
 function Register() {
-  const onFinish = values => {
-    console.log('Received values of form: ', values);
+  const [fileName, setFileName] = useState("");
+
+  const onFinish = ({ username, password, nickname: name }) => {
+    axios.post({ username, password, name, profileUrl: fileName })
+      .then(res => {
+        notification.success({
+          description: "Signup successfully"
+        });
+        props.history.push("/");
+      })
+      .catch(err => {
+        console.log(err);
+        notification.error({
+          description: "Something went wrong."
+        });
+      });
+  };
+
+  const props = {
+    name: 'img',
+    multiple: false,
+    action: `${BASE_BACKEND_URL}/uploads/`,
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (status === 'done') {
+        setFileName(info.file.response.url);
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
   };
 
   return (
     <Row justify="center">
       <Col span={16} className="Form">
         <Row justify="center">
-          <img style={{maxHeight: "132px", margin: "50px"}} src="https://www.facebook.com/images/fb_icon_325x325.png" alt="logo" />
+          <img style={{ maxHeight: "132px", margin: "50px" }} src="https://www.facebook.com/images/fb_icon_325x325.png" alt="logo" />
         </Row>
         <Divider />
         <Row>
@@ -40,16 +64,12 @@ function Register() {
             scrollToFirstError
           >
             <Form.Item
-              name="email"
-              label="E-mail"
+              name="username"
+              label="Username"
               rules={[
                 {
-                  type: 'email',
-                  message: 'The input is not valid E-mail!',
-                },
-                {
                   required: true,
-                  message: 'Please input your E-mail!',
+                  message: 'Please input your Username!',
                 },
               ]}
             >
@@ -107,11 +127,23 @@ function Register() {
             >
               <Input />
             </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
+            <div>
+              <Dragger {...props}>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                <p className="ant-upload-hint">
+                  Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+                  band files
+              </p>
+              </Dragger>
+            </div>
+            <Row justify="center" style={{ marginTop: "10px" }}>
               <Button type="primary" htmlType="submit">
                 Register
-        </Button>
-            </Form.Item>
+              </Button>
+            </Row>
           </Form>
         </Row>
       </Col>
@@ -119,4 +151,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default withRouter(Register);
