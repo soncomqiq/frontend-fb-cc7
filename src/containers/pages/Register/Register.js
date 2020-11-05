@@ -11,11 +11,11 @@ const layout = {
   wrapperCol: { xs: 24, sm: 19, md: 20, lg: 19, xl: 19, xxl: 19 },
 };
 
-function Register() {
+function Register(props) {
   const [fileName, setFileName] = useState("");
 
   const onFinish = ({ username, password, nickname: name }) => {
-    axios.post({ username, password, name, profileUrl: fileName })
+    axios.post("/users/register", { username, password, name, profileUrl: fileName })
       .then(res => {
         notification.success({
           description: "Signup successfully"
@@ -30,7 +30,7 @@ function Register() {
       });
   };
 
-  const props = {
+  const propsUpload = {
     name: 'img',
     multiple: false,
     action: `${BASE_BACKEND_URL}/uploads/`,
@@ -128,7 +128,7 @@ function Register() {
               <Input />
             </Form.Item>
             <div>
-              <Dragger {...props}>
+              <Dragger {...propsUpload}>
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined />
                 </p>
