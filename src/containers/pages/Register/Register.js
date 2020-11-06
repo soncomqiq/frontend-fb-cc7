@@ -19,7 +19,7 @@ function Register(props) {
       .then(res => {
         notification.success({
           description: "Signup successfully"
-        });
+        }); 
         props.history.push("/");
       })
       .catch(err => {
